@@ -247,5 +247,145 @@ FROM Customers;
 
 This SQL statement counts and returns the number of customer IDs in the "Customers" table.
 
+# Primary keys and Foreign key relationships
+
+**Primary Keys**
+
+A primary key is a column (or a combination of columns) in a table that uniquely identifies each row of the table. In other words, you cannot have duplicate values in a primary key column. Here is an example of creating a table with a primary key:
+
+```sql
+CREATE TABLE Customers (
+    CustomerID int NOT NULL,
+    CustomerName varchar(255),
+    ContactName varchar(255),
+    Country varchar(255),
+    PRIMARY KEY (CustomerID)
+);
+```
+
+In this example, the `CustomerID` column is the primary key, so it must contain unique, non-null values.
+
+**Foreign Keys**
+
+A foreign key is a column or a set of columns in a table that is used to establish a link between the data in two tables. It acts as a cross-reference between tables because it references the primary key of another table, thereby establishing a link between them. Here is an example of creating a table with a foreign key:
+
+```sql
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int,
+    CustomerID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+```
+
+In this example, the `CustomerID` in the Orders table is a foreign key that refers to the `CustomerID` in the Customers table. This means that for each order, we store the ID of the customer who made the order, and this allows us to link each order with a specific customer.
+
+**Relationships in MySQL**
+
+In MySQL, relationships can be established between tables by using primary keys and foreign keys. These relationships can be of various types, including:
+
+1. **One-to-One:** Each row in table A is linked to no more than one row in table B. This is often used when you have two tables that have a clear correspondence but are separated because of the nature of the data.
+
+2. **One-to-Many (or Many-to-One):** Each row in table A can be related to many rows in table B. This is the most common relationship type. For example, a customer can have many orders, thus forming a one-to-many relationship.
+
+3. **Many-to-Many:** Multiple rows in table A can be related to multiple rows in table B. Many-to-Many relationships are implemented using a junction table with the keys from both the tables forming the composite primary key of the junction table. 
+
+These relationships establish a link between the data in different tables, thereby allowing complex queries across multiple tables. Understanding and properly designing these relationships are key to a well-functioning relational database system.
+
+let's proceed to the examples. 
+
+**One-to-One Relationship**
+
+Suppose you have a User table and a Profile table, and each User has exactly one Profile.
+
+First, we create the User table:
+
+```sql
+CREATE TABLE Users (
+    UserID int NOT NULL,
+    UserName varchar(255),
+    PRIMARY KEY (UserID)
+);
+```
+
+Then we create the Profile table with UserID as a foreign key:
+
+```sql
+CREATE TABLE Profiles (
+    ProfileID int NOT NULL,
+    UserID int,
+    Bio varchar(255),
+    PRIMARY KEY (ProfileID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+```
+
+In this example, `UserID` serves as a foreign key in the `Profiles` table that links to the `UserID` in the `Users` table, establishing a one-to-one relationship.
+
+**One-to-Many Relationship**
+
+Now let's assume that each User can have multiple Orders. Here we have a one-to-many relationship between Users and Orders.
+
+First, we create the Users table as above:
+
+```sql
+CREATE TABLE Users (
+    UserID int NOT NULL,
+    UserName varchar(255),
+    PRIMARY KEY (UserID)
+);
+```
+
+Next, we create the Orders table:
+
+```sql
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    UserID int,
+    OrderDetails varchar(255),
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+```
+
+Here, `UserID` is a foreign key in the `Orders` table linking to the `UserID` in the `Users` table. A single user can have multiple orders, forming a one-to-many relationship.
+
+**Many-to-Many Relationship**
+
+Suppose each User can be enrolled in multiple Courses, and each Course can have multiple Users. This is a many-to-many relationship and is implemented via a junction table.
+
+First, we create the Users and Courses tables:
+
+```sql
+CREATE TABLE Users (
+    UserID int NOT NULL,
+    UserName varchar(255),
+    PRIMARY KEY (UserID)
+);
+
+CREATE TABLE Courses (
+    CourseID int NOT NULL,
+    CourseName varchar(255),
+    PRIMARY KEY (CourseID)
+);
+```
+
+Then we create a junction table called `UserCourses` to link Users and Courses:
+
+```sql
+CREATE TABLE UserCourses (
+    UserID int,
+    CourseID int,
+    PRIMARY KEY (UserID, CourseID),
+    FOREIGN KEY (UserID) REFERENCES Users(UserID),
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+);
+```
+
+In the `UserCourses` table, both `UserID` and `CourseID` together form the primary key. This allows for each User to be associated with multiple Courses, and each Course to be associated with multiple Users.
+
+These examples should give you a good understanding of how to implement different types of relationships using primary and foreign keys in MySQL.
+
 
 
